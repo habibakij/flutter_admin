@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 void main() {
   runApp(MyApp());
@@ -39,11 +36,24 @@ class _AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: LayoutBuilder(
-        builder: (context, constraints) {
-          return constraints.maxWidth < 800
-              ? Drawer(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 70,
+            backgroundColor: const Color(0xFF144CA1),
+            title: const Text(
+              "Travel Guide Admin Panel",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30.0,
+                  fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+          ),
+          drawer: constraints.maxWidth > 800
+              ? null
+              : Drawer(
                   child: ListView(
                     children: [
                       DrawerHeader(
@@ -70,76 +80,99 @@ class _AdminPanelState extends State<AdminPanel> {
                             setState(() => selectedMenu = 'Profile Update'),
                       ),
                       ListTile(
-                        title: Text("Add New Place",
-                            style: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.color)),
-                        onTap: () =>
-                            setState(() => selectedMenu = 'Add New Place'),
-                      ),
-                      ListTile(
-                        title: Text("Settings",
-                            style: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.color)),
-                        onTap: () => setState(() => selectedMenu = 'Settings'),
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox();
-        },
-      ),
-      appBar: AppBar(title: const Text("Admin Panel")),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Row(
-            children: [
-              if (constraints.maxWidth > 800)
-                SizedBox(
-                  width: 350,
-                  child: ListView(
-                    children: [
-                      ListTile(
-                        title: const Text(
-                          "Profile Update",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        onTap: () =>
-                            setState(() => selectedMenu = 'Profile Update'),
-                      ),
-                      ListTile(
-                        title: const Text(
+                        title: Text(
                           "Add New Place",
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
                         ),
                         onTap: () =>
                             setState(() => selectedMenu = 'Add New Place'),
                       ),
                       ListTile(
-                        title: const Text(
+                        title: Text(
                           "Settings",
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
                         ),
                         onTap: () => setState(() => selectedMenu = 'Settings'),
                       ),
                     ],
                   ),
                 ),
-              Expanded(
+          body: Padding(
+            padding: const EdgeInsets.only(top: 30.0, left: 12.0, right: 12.0),
+            child: Row(
+              children: [
+                if (constraints.maxWidth > 800)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: SizedBox(
+                      width: 500,
+                      child: ListView(
+                        children: [
+                          _buildDrawerItem("Profile Update"),
+                          const SizedBox(height: 12.0),
+                          _buildDrawerItem("Add New Place"),
+                          const SizedBox(height: 12.0),
+                          _buildDrawerItem("Settings"),
+                        ],
+                      ),
+                    ),
+                  ),
+                Expanded(
                   child: selectedMenu == 'Profile Update'
                       ? ProfileUpdateScreen()
                       : selectedMenu == 'Add New Place'
                           ? AddNewPlaceScreen()
-                          : SettingsScreen(isDarkMode: widget.isDarkMode)),
-            ],
-          );
-        },
+                          : SettingsScreen(isDarkMode: widget.isDarkMode),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDrawerItem(String title) {
+    return InkWell(
+      borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+      child: AnimatedContainer(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        duration: const Duration(milliseconds: 500),
+        height: 60.0,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selectedMenu == title ? const Color(0xFF144CA1) : Colors.white,
+          borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+        ),
+        padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                    fontSize: 20.0,
+                    color: selectedMenu == title ? Colors.white : Colors.black,
+                    fontWeight: selectedMenu == title
+                        ? FontWeight.bold
+                        : FontWeight.normal),
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 24,
+              color: selectedMenu == title
+                  ? Colors.white
+                  : const Color(0xFF144CA1),
+            ),
+          ],
+        ),
       ),
+      onTap: () => setState(() => selectedMenu = title),
     );
   }
 }
@@ -147,38 +180,65 @@ class _AdminPanelState extends State<AdminPanel> {
 class ProfileUpdateScreen extends StatelessWidget {
   final ImagePicker picker = ImagePicker();
   final Rxn<XFile> profileImage = Rxn<XFile>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController phoneNameController = TextEditingController();
+  TextEditingController emailNameController = TextEditingController();
 
   ProfileUpdateScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Profile Update",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          const TextField(decoration: InputDecoration(labelText: "First Name")),
-          const TextField(decoration: InputDecoration(labelText: "Last Name")),
-          const TextField(
-              decoration: InputDecoration(labelText: "Phone Number")),
-          const TextField(decoration: InputDecoration(labelText: "Email")),
-          DropdownButtonFormField(
-            items: ["USA", "India", "UK", "Canada"]
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                .toList(),
-            onChanged: (value) {},
-            decoration: const InputDecoration(labelText: "Nationality"),
-          ),
-          const SizedBox(height: 10),
-          Obx(() => profileImage.value == null
-              ? const Text("No Image Selected")
-              : Image.network(profileImage.value!.path, height: 100)),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 60.0,
+              width: double.infinity,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                  color: Color(0xFF144CA1),
+                  borderRadius: BorderRadius.all(Radius.circular(30.0))),
+              child: const Text(
+                "Profile Update",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextField(
+              controller: firstNameController,
+              decoration: const InputDecoration(labelText: "First Name"),
+            ),
+            TextField(
+                controller: lastNameController,
+                decoration: const InputDecoration(labelText: "Last Name")),
+            TextField(
+                controller: phoneNameController,
+                decoration: const InputDecoration(labelText: "Phone Number")),
+            TextField(
+                controller: emailNameController,
+                decoration: const InputDecoration(labelText: "Email")),
+            DropdownButtonFormField(
+              items: ["USA", "India", "UK", "Canada"]
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (value) {},
+              decoration: const InputDecoration(labelText: "Nationality"),
+            ),
+            const SizedBox(height: 10),
+            Obx(() => profileImage.value == null
+                ? const Text("No Image Selected")
+                : Image.network(profileImage.value!.path, height: 100)),
+            const SizedBox(height: 24),
+            ElevatedButton(
               onPressed: () async {
                 final pickedFile =
                     await picker.pickImage(source: ImageSource.gallery);
@@ -188,16 +248,34 @@ class ProfileUpdateScreen extends StatelessWidget {
               },
               style: ButtonStyle(
                   foregroundColor:
-                      WidgetStateProperty.all(const Color(0xFFFFFFFF)),
-                  backgroundColor:
                       WidgetStateProperty.all(const Color(0xFF144CA1)),
                   padding: WidgetStateProperty.all(const EdgeInsets.all(20)),
                   textStyle:
-                      WidgetStateProperty.all(const TextStyle(fontSize: 20))),
+                      WidgetStateProperty.all(const TextStyle(fontSize: 16))),
               child: const Text("Select Profile Image"),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    Get.snackbar("Success", "Profile updated successfully!");
+                  }
+                },
+                style: ButtonStyle(
+                    foregroundColor:
+                        WidgetStateProperty.all(const Color(0xFFFFFFFF)),
+                    backgroundColor:
+                        WidgetStateProperty.all(const Color(0xFF144CA1)),
+                    padding: WidgetStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle:
+                        WidgetStateProperty.all(const TextStyle(fontSize: 20))),
+                child: const Text("Submit"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -217,7 +295,7 @@ class AddNewPlaceScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("Add New Place",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
           const TextField(
               decoration: InputDecoration(labelText: "Place Title")),
           const TextField(
@@ -270,7 +348,7 @@ class SettingsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("Settings",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
           SwitchListTile(
             title: const Text("Enable Notifications"),
             value: true,
