@@ -206,32 +206,55 @@ class ProfileUpdateScreen extends StatelessWidget {
                   color: Color(0xFF144CA1),
                   borderRadius: BorderRadius.all(Radius.circular(30.0))),
               child: const Text(
-                "Profile Update",
+                "Profile",
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold),
               ),
             ),
-            TextField(
-              controller: firstNameController,
-              decoration: const InputDecoration(labelText: "First Name"),
-            ),
-            TextField(
-                controller: lastNameController,
-                decoration: const InputDecoration(labelText: "Last Name")),
-            TextField(
-                controller: phoneNameController,
-                decoration: const InputDecoration(labelText: "Phone Number")),
-            TextField(
-                controller: emailNameController,
-                decoration: const InputDecoration(labelText: "Email")),
-            DropdownButtonFormField(
-              items: ["USA", "India", "UK", "Canada"]
+            const SizedBox(height: 24),
+            _textInputWidget(
+                conntroller: firstNameController, labelText: "First Name"),
+            const SizedBox(height: 16),
+            _textInputWidget(
+                conntroller: lastNameController, labelText: "Last Name"),
+            const SizedBox(height: 16),
+            _textInputWidget(
+                conntroller: phoneNameController, labelText: "Phone"),
+            const SizedBox(height: 16),
+            _textInputWidget(
+                conntroller: emailNameController, labelText: "Email"),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              items: ["Bangladesh", "Saudi Arabia", "Pakistan", "Palestine"]
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
               onChanged: (value) {},
-              decoration: const InputDecoration(labelText: "Nationality"),
+              decoration: InputDecoration(
+                labelText: "Nationality",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: const BorderSide(color: Colors.red),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: const BorderSide(color: Colors.red, width: 2),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              ),
             ),
             const SizedBox(height: 10),
             Obx(() => profileImage.value == null
@@ -279,6 +302,45 @@ class ProfileUpdateScreen extends StatelessWidget {
       ),
     );
   }
+
+  _textInputWidget(
+      {TextEditingController? conntroller, String labelText = ''}) {
+    return TextFormField(
+      controller: conntroller,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Field can't be empty";
+        }
+
+        return null;
+      },
+    );
+  }
 }
 
 class AddNewPlaceScreen extends StatelessWidget {
@@ -287,6 +349,12 @@ class AddNewPlaceScreen extends StatelessWidget {
 
   AddNewPlaceScreen({super.key});
 
+  TextEditingController titleController = TextEditingController();
+
+  TextEditingController locationController = TextEditingController();
+
+  TextEditingController descriptionController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -294,15 +362,33 @@ class AddNewPlaceScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Add New Place",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-          const TextField(
-              decoration: InputDecoration(labelText: "Place Title")),
-          const TextField(
-              decoration: InputDecoration(labelText: "Place Location")),
-          const TextField(
-              decoration: InputDecoration(labelText: "Place Details"),
-              maxLines: 3),
+          Container(
+            height: 60.0,
+            width: double.infinity,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+                color: Color(0xFF144CA1),
+                borderRadius: BorderRadius.all(Radius.circular(30.0))),
+            child: const Text(
+              "Add New Place",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 24),
+          _textInputWidget(
+              conntroller: titleController, labelText: "Place Title"),
+          const SizedBox(height: 16),
+          _textInputWidget(
+              conntroller: locationController, labelText: "Place Location"),
+          const SizedBox(height: 16),
+          _textInputWidget(
+              conntroller: descriptionController,
+              labelText: "Place Details",
+              maxLine: 3),
+          const SizedBox(height: 16),
           const SizedBox(height: 10),
           Obx(() => Wrap(
                 spacing: 8,
@@ -334,6 +420,48 @@ class AddNewPlaceScreen extends StatelessWidget {
       ),
     );
   }
+
+  _textInputWidget(
+      {TextEditingController? conntroller,
+      String labelText = '',
+      int maxLine = 1}) {
+    return TextFormField(
+      controller: conntroller,
+      keyboardType: TextInputType.text,
+      maxLines: maxLine,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Field can't be empty";
+        }
+
+        return null;
+      },
+    );
+  }
 }
 
 class SettingsScreen extends StatelessWidget {
@@ -347,8 +475,22 @@ class SettingsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Settings",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+          Container(
+            height: 60.0,
+            width: double.infinity,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+                color: Color(0xFF144CA1),
+                borderRadius: BorderRadius.all(Radius.circular(30.0))),
+            child: const Text(
+              "Settings",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 24),
           SwitchListTile(
             title: const Text("Enable Notifications"),
             value: true,
