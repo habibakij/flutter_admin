@@ -28,6 +28,7 @@ class AdminPanel extends StatefulWidget {
   const AdminPanel({super.key, required this.isDarkMode});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AdminPanelState createState() => _AdminPanelState();
 }
 
@@ -177,6 +178,7 @@ class _AdminPanelState extends State<AdminPanel> {
   }
 }
 
+// ignore: must_be_immutable
 class ProfileUpdateScreen extends StatelessWidget {
   final ImagePicker picker = ImagePicker();
   final Rxn<XFile> profileImage = Rxn<XFile>();
@@ -343,6 +345,7 @@ class ProfileUpdateScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class AddNewPlaceScreen extends StatelessWidget {
   final RxList<XFile> selectedImages = <XFile>[].obs;
   final ImagePicker picker = ImagePicker();
@@ -506,4 +509,3 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
-/// add git branch protection 
