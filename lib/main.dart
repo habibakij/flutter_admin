@@ -506,4 +506,4 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
-/// test git rul set
+/// test git branch protection
