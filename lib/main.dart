@@ -128,7 +128,7 @@ class _AdminPanelState extends State<AdminPanel> {
                   child: selectedMenu == 'Profile Update'
                       ? ProfileUpdateScreen()
                       : selectedMenu == 'Add New Place'
-                          ? AddNewPlaceScreen()
+                          ? const AddNewPlaceScreen()
                           : SettingsScreen(isDarkMode: widget.isDarkMode),
                 ),
               ],
